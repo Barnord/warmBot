@@ -1,0 +1,60 @@
+﻿using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace warmBot.Managers
+{
+    internal class EventManager
+    {
+        private static DiscordSocketClient _client = ServiceManager.GetService<DiscordSocketClient>();
+        private static CommandService _commandService = ServiceManager.GetService<CommandService>();
+
+        public static Task LoadCommands()
+        {
+            _client.Log += msg =>
+            {
+                Console.WriteLine($"[{DateTime.Now}]\t({msg.Source})\t{msg.Message}");
+                return Task.CompletedTask;
+            };
+
+            _commandService.Log += msg =>
+            {
+                Console.WriteLine($"[{DateTime.Now}]\t({msg.Source})\t{msg.Message}");
+                return Task.CompletedTask;
+            };
+
+            _client.Ready += OnReady;
+
+            _client.MessageReceived += OnMessageReceived;
+            return Task.CompletedTask;
+        }
+
+        private static async Task OnMessageReceived(SocketMessage arg)
+        {
+            var msg = arg as SocketUserMessage;
+            var context = new SocketCommandContext(_client, msg);
+
+            if (msg.Author.IsBot || msg.Channel is IDMChannel) return;
+
+            int argPos = 0;
+
+            if (!(msg.HasStringPrefix(ConfigManager.Config.Prefix, ref argPos) || msg.HasMentionPrefix(_client.CurrentUser, ref argPos))) return;
+
+            var result = await _commandService.ExecuteAsync(context, argPos, ServiceManager.Provider);
+
+            if (!result.IsSuccess) if (result.Error == CommandError.UnknownCommand) return;
+        }
+
+        private static async Task OnReady()
+        {
+            Console.WriteLine($"[{DateTime.Now}]\t(READY)\tBot is ready");
+            await _client.SetStatusAsync(Discord.UserStatus.Online);
+            await _client.SetGameAsync($"Prefix {ConfigManager.Config.Prefix}", null, ActivityType.Listening);
+        }
+    }
+}
