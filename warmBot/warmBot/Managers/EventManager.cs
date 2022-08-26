@@ -13,6 +13,7 @@ namespace warmBot.Managers
     {
         private static DiscordSocketClient _client = ServiceManager.GetService<DiscordSocketClient>();
         private static CommandService _commandService = ServiceManager.GetService<CommandService>();
+        //private static IReadOnlyCollection
 
         public static Task LoadCommands()
         {
@@ -31,6 +32,8 @@ namespace warmBot.Managers
             _client.Ready += OnReady;
 
             _client.MessageReceived += OnMessageReceived;
+            _client.UserVoiceStateUpdated += OnUserJoinVoice;
+
             return Task.CompletedTask;
         }
 
@@ -48,6 +51,20 @@ namespace warmBot.Managers
             var result = await _commandService.ExecuteAsync(context, argPos, ServiceManager.Provider);
 
             if (!result.IsSuccess) if (result.Error == CommandError.UnknownCommand) return;
+        }
+
+        private static async Task OnUserJoinVoice(SocketUser user, SocketVoiceState left, SocketVoiceState joined)
+        {
+            if (user.IsBot) return;
+            
+            if (joined.VoiceChannel is null)
+            {
+                Console.WriteLine($"User:{user}\tLeft Channel:{left}");
+            }
+            else
+            {
+                Console.WriteLine($"User:{user}\tJoined Channel:{joined}");
+            }
         }
 
         private static async Task OnReady()
