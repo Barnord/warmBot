@@ -38,6 +38,8 @@ namespace warmBot.Managers
             public string Token { get; private set; }
             [JsonProperty]
             public string Prefix { get; private set; }
+            [JsonProperty]
+            public string Channel { get; private set; }
         }
     }
 }
