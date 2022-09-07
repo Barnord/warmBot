@@ -56,6 +56,8 @@ namespace warmBot.Managers
         private static async Task OnUserJoinVoice(SocketUser user, SocketVoiceState left, SocketVoiceState joined)
         {
             if (user.IsBot) return;
+
+            string Puuid = UserManager.GetUserAsync(user);
             
             if (joined.VoiceChannel is null)
             {

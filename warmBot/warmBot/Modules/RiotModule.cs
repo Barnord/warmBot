@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace warmBot.Modules
 {
-    internal class RitoModule : ModuleBase<SocketCommandContext>
+    internal class RiotModule : ModuleBase<SocketCommandContext>
     {
-
+        [Command("user")]
+        [Summary("instantiates a userDetails object")]
+        public Task
     }
 }

@@ -37,6 +37,8 @@ namespace warmBot.Managers
             [JsonProperty]
             public string Token { get; private set; }
             [JsonProperty]
+            public string RiotToken { get; private set; }
+            [JsonProperty]
             public string Prefix { get; private set; }
             [JsonProperty]
             public string Channel { get; private set; }
