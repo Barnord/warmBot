@@ -16,7 +16,7 @@ namespace warmBot.Managers
 
         // TODO: Make this a dictionary.
         //public static List<UserDetails> Users { get; private set; }
-        public static Dictionary<SocketEntity<ulong>, UserDetails> Users { get; private set; }
+        public static Dictionary<SocketUser, UserDetails> Users { get; private set; }
 
         static UserManager()
         {
@@ -24,14 +24,14 @@ namespace warmBot.Managers
 
             if (!File.Exists(UserPath))
             {
-                Users = new Dictionary<SocketEntity<ulong>, UserDetails>();
+                Users = new Dictionary<SocketUser, UserDetails>();
                 var json = JsonConvert.SerializeObject(Users, Formatting.Indented);
                 File.WriteAllText(UserPath, json);
             }
             else
             {
                 var json = File.ReadAllText(UserPath);
-                Users = JsonConvert.DeserializeObject<Dictionary<SocketEntity<ulong>, UserDetails>>(json);
+                Users = JsonConvert.DeserializeObject<Dictionary<SocketUser, UserDetails>>(json);
             }
         }
 
@@ -42,6 +42,7 @@ namespace warmBot.Managers
             {
                 UserDetails Deets = new UserDetails();
                 await RiotManager.GetSummonerAsync(Users[user].Summoner);
+                ConfigManager.BotConfig.Channel.SendMessageAsync();
             }
             else
             {
@@ -49,6 +50,17 @@ namespace warmBot.Managers
                 Deets.DiscordUser = user;
                 // Ask user to set summoner
             }
+        }
+
+        public static string SetSummoner(SocketUser user, string sid)
+        {
+            Users.TryGetValue(user, out UserDetails deets);
+            deets.Summoner = sid;
+
+            Users.TryGetValue(user, out UserDetails update);
+
+            if (update.Equals(deets)) return "User updated successfully!";
+            else return "It didn't work.";
         }
 
         public struct UserDetails

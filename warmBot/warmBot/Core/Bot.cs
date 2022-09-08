@@ -13,6 +13,8 @@ namespace warmBot.Core
 {
     internal class Bot
     {
+        public static ISocketMessageChannel channel;
+
         private DiscordSocketClient _client;
         private CommandService _commandService;
 
@@ -30,6 +32,8 @@ namespace warmBot.Core
                 DefaultRunMode = RunMode.Async,
                 IgnoreExtraArgs = true,
             });
+
+            channel = _client.GetChannel(ConfigManager.Config.Channel) as ISocketMessageChannel;
 
             var collection = new ServiceCollection();
 
