@@ -41,6 +41,8 @@ namespace warmBot.Core
             collection.AddSingleton(_commandService);
 
             ServiceManager.SetProvider(collection);
+
+            RiotManager.RunAsync();
         }
 
         public async Task MainAsync()
