@@ -13,6 +13,8 @@ namespace warmBot.Core
 {
     internal class Bot
     {
+        public static ISocketMessageChannel channel;
+
         private DiscordSocketClient _client;
         private CommandService _commandService;
 
@@ -31,12 +33,16 @@ namespace warmBot.Core
                 IgnoreExtraArgs = true,
             });
 
+            channel = _client.GetChannel(ConfigManager.Config.Channel) as ISocketMessageChannel;
+
             var collection = new ServiceCollection();
 
             collection.AddSingleton(_client);
             collection.AddSingleton(_commandService);
 
             ServiceManager.SetProvider(collection);
+
+            RiotManager.RunAsync();
         }
 
         public async Task MainAsync()

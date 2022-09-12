@@ -13,7 +13,6 @@ namespace warmBot.Managers
     {
         private static DiscordSocketClient _client = ServiceManager.GetService<DiscordSocketClient>();
         private static CommandService _commandService = ServiceManager.GetService<CommandService>();
-        //private static IReadOnlyCollection
 
         public static Task LoadCommands()
         {
@@ -56,6 +55,8 @@ namespace warmBot.Managers
         private static async Task OnUserJoinVoice(SocketUser user, SocketVoiceState left, SocketVoiceState joined)
         {
             if (user.IsBot) return;
+
+            string Puuid = UserManager.GetUserAsync(user).Result;
             
             if (joined.VoiceChannel is null)
             {
@@ -65,6 +66,8 @@ namespace warmBot.Managers
             {
                 Console.WriteLine($"User:{user}\tJoined Channel:{joined}");
             }
+
+            //await RiotManager.WarmnessUpdate();
         }
 
         private static async Task OnReady()
